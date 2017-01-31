@@ -14,8 +14,8 @@ require('rxjs/add/operator/toPromise');
 var HeroService = (function () {
     function HeroService(http) {
         this.http = http;
+        this.headers = new http_1.Headers({ 'Content-Type': 'application/json' });
         this.heroesUrl = 'api/heroes'; // URL to web api
-        this.headers = new http_1.Headers({ 'content-Type': 'application/json' });
     }
     HeroService.prototype.getHeroes = function () {
         return this.http.get(this.heroesUrl)
@@ -30,23 +30,11 @@ var HeroService = (function () {
             .then(function (response) { return response.json().data; })
             .catch(this.handleError);
     };
-    HeroService.prototype.handleError = function (error) {
-        console.error('An error occurred', error); // for demo purposes only
-        return Promise.reject(error.message || error);
-    };
-    HeroService.prototype.getHeroesSlowly = function () {
-        var _this = this;
-        return new Promise(function (resolve) {
-            // Simulate server latency with 2 second delay
-            setTimeout(function () { return resolve(_this.getHeroes()); }, 2000);
-        });
-    };
-    HeroService.prototype.update = function (hero) {
-        var url = this.heroesUrl + "/" + hero.id;
-        return this.http
-            .put(url, JSON.stringify(hero), { headers: this.headers })
+    HeroService.prototype.delete = function (id) {
+        var url = this.heroesUrl + "/" + id;
+        return this.http.delete(url, { headers: this.headers })
             .toPromise()
-            .then(function () { return hero; })
+            .then(function () { return null; })
             .catch(this.handleError);
     };
     HeroService.prototype.create = function (name) {
@@ -56,12 +44,17 @@ var HeroService = (function () {
             .then(function (res) { return res.json().data; })
             .catch(this.handleError);
     };
-    HeroService.prototype.delete = function (id) {
-        var url = this.heroesUrl + "/" + id;
-        return this.http.delete(url, { headers: this.headers })
+    HeroService.prototype.update = function (hero) {
+        var url = this.heroesUrl + "/" + hero.id;
+        return this.http
+            .put(url, JSON.stringify(hero), { headers: this.headers })
             .toPromise()
-            .then(function () { return null; })
+            .then(function () { return hero; })
             .catch(this.handleError);
+    };
+    HeroService.prototype.handleError = function (error) {
+        console.error('An error occurred', error); // for demo purposes only
+        return Promise.reject(error.message || error);
     };
     HeroService = __decorate([
         core_1.Injectable(), 
